@@ -1,0 +1,4 @@
+MODEL_NAME = "all-MiniLM-L6-v2"
+TOP_K = 3
+CHUNK_SIZE = 300
+GROQ_API_KEY = "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"

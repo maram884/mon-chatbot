@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MediLearn — Assistant Médical Éducatif</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════════════════
+   VARIABLES — LIGHT / DARK
+══════════════════════════════════════════════════════════ */
+:root {
+  --teal-50:   #E1F5EE;
+  --teal-100: #9FE1CB;
+  --teal-200: #5DCAA5;
+  --teal-400: #1D9E75;
+  --teal-600: #0F6E56;
+  --teal-800: #085041;
+  --blue-50:  #E6F1FB;
+  --blue-100: #B5D4F4;
+  --blue-600: #185FA5;
+  --blue-800: #0C447C;
+  --coral-50: #FAECE7;
+  --coral-400:#D85A30;
+  --amber-50: #FAEEDA;
+  --amber-400:#BA7517;
+  --pink-50:  #FBEAF0;
+  --pink-400: #D4537E;
+
+  /* Light mode */
+  --bg:           #F7F7F4;
+  --surface:      #FFFFFF;
+  --surface-2:    #F1EFE8;
+  --border:       rgba(0,0,0,0.07);
+  --text-primary: #18181A;
+  --text-muted:   #888780;
+  --text-faint:   #B4B2A9;
+  --sb-from:      #0a5c47;
+  --sb-to:        #0d7a5f;
+  --sb-text:      rgba(255,255,255,0.82);
+  --sb-muted:     rgba(255,255,255,0.38);
+  --bubble-ai-bg: #FFFFFF;
+  --bubble-ai-color: #1a1a18;
+}
+
+[data-theme="dark"] {
+  --bg:           #111210;
+  --surface:      #1C1D1A;
+  --surface-2:    #252622;
+  --border:       rgba(255,255,255,0.07);
+  --text-primary: #E8E8E4;
+  --text-muted:   #888780;
+  --text-faint:   #555550;
+  --sb-from:      #071f17;
+  --sb-to:        #0a2e22;
+  --sb-text:      rgba(255,255,255,0.75);
+  --sb-muted:     rgba(255,255,255,0.3);
+  --bubble-ai-bg: #1C1D1A;
+  --bubble-ai-color: #E8E8E4;
+}
+
+/* ══════════════════════════════════════════════════════════
+   RESET + BASE
+══════════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  display: flex;
+  height: 100vh;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* ══════════════════════════════════════════════════════════
+   SIDEBAR (GAUCHE)
+══════════════════════════════════════════════════════════ */
+.sidebar {
+  width: 272px; min-width: 272px;
+  background: linear-gradient(175deg, var(--sb-from) 0%, var(--teal-600) 60%, var(--sb-to) 100%);
+  display: flex; flex-direction: column; overflow: hidden;
+  transition: background 0.3s;
+}
+.sb-header { padding: 32px 24px 24px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+.logo-row { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+.logo-mark {
+  width: 42px; height: 42px; background: rgba(255,255,255,0.13);
+  border: 1px solid rgba(255,255,255,0.18); border-radius: 12px;
+  display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;
+}
+.logo-name { font-family: 'DM Serif Display', serif; font-size: 24px; color: #fff; letter-spacing: -0.5px; line-height: 1; }
+.logo-tag { font-size: 10.5px; color: rgba(255,255,255,0.5); letter-spacing: 1px; text-transform: uppercase; padding-left: 54px; }
+.sb-section { padding: 20px 20px 8px; font-size: 10px; color: rgba(255,255,255,0.38); letter-spacing: 1.2px; text-transform: uppercase; font-weight: 500; }
+.source-item { display: flex; align-items: center; gap: 10px; padding: 9px 16px 9px 20px; border-radius: 8px; margin: 1px 8px; cursor: default; transition: background 0.15s; }
+.source-item:hover { background: rgba(255,255,255,0.07); }
+.src-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.src-label { font-size: 13.5px; color: var(--sb-text); }
+.src-desc  { font-size: 10.5px; color: var(--sb-muted); margin-left: auto; }
+.sb-tech { padding: 8px 20px 0; }
+.tech-pill { display: flex; align-items: center; gap: 7px; padding: 6px 0; font-size: 12px; color: rgba(255,255,255,0.45); border-top: 1px solid rgba(255,255,255,0.06); }
+.tech-pill:first-child { border-top: none; }
+.tech-dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,0.25); }
+.sb-upload { padding: 12px 16px 0; margin-top: 8px; }
+.upload-zone { border: 1.5px dashed rgba(255,255,255,0.2); border-radius: 10px; padding: 12px; text-align: center; cursor: pointer; transition: all 0.2s; }
+.upload-zone:hover, .upload-zone.drag-over { border-color: var(--teal-200); background: rgba(255,255,255,0.06); }
+.upload-zone input[type="file"] { display: none; }
+.upload-icon { font-size: 20px; margin-bottom: 4px; }
+.upload-label { font-size: 11.5px; color: rgba(255,255,255,0.5); line-height: 1.4; }
+.upload-label strong { color: rgba(255,255,255,0.75); }
+.upload-status { font-size: 10.5px; color: var(--teal-200); margin-top: 6px; text-align: center; min-height: 14px; }
+.sb-footer { margin-top: auto; padding: 18px 16px; border-top: 1px solid rgba(255,255,255,0.08); }
+.edu-badge { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 22px; padding: 9px 14px; display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: rgba(255,255,255,0.65); line-height: 1.3; }
+.pulse-dot { width: 7px; height: 7px; border-radius: 50%; background: #9FE1CB; flex-shrink: 0; animation: pulse 2.2s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.35;} }
+
+/* ══════════════════════════════════════════════════════════
+   MAIN ZONE
+══════════════════════════════════════════════════════════ */
+.main {
+  flex: 1; display: flex; flex-direction: column;
+  overflow: hidden; min-width: 0;
+}
+.topbar {
+  height: 58px; background: var(--surface); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 28px; flex-shrink: 0; transition: background 0.3s;
+}
+.topbar-left { display: flex; align-items: center; gap: 12px; }
+.topbar-title { font-size: 15px; font-weight: 500; color: var(--text-primary); }
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+
+.status-badge { display: flex; align-items: center; gap: 6px; font-size: 11.5px; padding: 4px 11px; border-radius: 20px; font-weight: 500; transition: all 0.3s; }
+.status-badge.loading { background: var(--amber-50); color: var(--amber-400); }
+.status-badge.ready   { background: var(--teal-50);  color: var(--teal-600); }
+.status-badge.error   { background: var(--coral-50); color: var(--coral-400); }
+[data-theme="dark"] .status-badge.loading { background: #2a220a; }
+[data-theme="dark"] .status-badge.ready   { background: #0a1f18; }
+[data-theme="dark"] .status-badge.error   { background: #2a100a; }
+.status-dot-anim { width: 6px; height: 6px; border-radius: 50%; background: currentColor; animation: pulse 1.5s infinite; }
+
+.rag-tag { font-size: 11px; padding: 4px 10px; background: var(--blue-50); color: var(--blue-600); border-radius: 20px; font-weight: 500; }
+[data-theme="dark"] .rag-tag { background: #0a1422; color: var(--blue-100); }
+
+.theme-toggle, .history-toggle {
+  width: 38px; height: 38px; border-radius: 10px;
+  background: var(--surface-2); border: 1px solid var(--border);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 18px; transition: all 0.2s; color: var(--text-muted);
+}
+.theme-toggle:hover, .history-toggle:hover { background: var(--teal-50); color: var(--teal-600); }
+
+.clear-btn {
+  height: 30px; padding: 0 12px; border-radius: 8px;
+  background: transparent; border: 1px solid var(--border);
+  color: var(--text-muted); font-size: 11.5px; font-family: 'DM Sans', sans-serif;
+  cursor: pointer; transition: all 0.15s;
+}
+.clear-btn:hover { background: var(--coral-50); color: var(--coral-400); border-color: #F0997B; }
+
+/* Chat area */
+.chat-area { flex: 1; overflow-y: auto; padding: 28px 32px; display: flex; flex-direction: column; gap: 22px; scroll-behavior: smooth; }
+.welcome { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; text-align: center; padding: 32px 20px 20px; }
+.welcome-icon-wrap { width: 72px; height: 72px; background: var(--teal-50); border: 1px solid var(--teal-100); border-radius: 22px; display: flex; align-items: center; justify-content: center; font-size: 34px; margin-bottom: 24px; }
+[data-theme="dark"] .welcome-icon-wrap { background: #0a1f18; }
+.welcome h1 { font-family: 'DM Serif Display', serif; font-size: 30px; color: var(--text-primary); letter-spacing: -0.5px; margin-bottom: 12px; }
+.welcome-sub { font-size: 14.5px; color: var(--text-muted); max-width: 440px; line-height: 1.75; margin-bottom: 36px; }
+.welcome-sub strong { color: var(--text-primary); }
+
+.sugg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 560px; }
+.sugg-btn { background: var(--surface); border: 1px solid var(--border); border-radius: 13px; padding: 15px 16px 14px; text-align: left; cursor: pointer; transition: all 0.15s; font-family: 'DM Sans', sans-serif; }
+.sugg-btn:hover { border-color: var(--teal-100); background: var(--teal-50); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(15,110,86,0.08); }
+[data-theme="dark"] .sugg-btn:hover { background: #0a1f18; }
+.sugg-cat { font-size: 10.5px; color: var(--teal-400); font-weight: 600; letter-spacing: 0.5px; margin-bottom: 5px; display: block; }
+.sugg-text { font-size: 13px; color: var(--text-primary); line-height: 1.45; }
+
+/* Messages */
+.msg-row { display: flex; gap: 12px; animation: fadeUp 0.22s ease-out; }
+.msg-row.user { flex-direction: row-reverse; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0; margin-top: 2px; }
+.avatar.ai   { background: var(--teal-400); color: #fff; }
+.avatar.user { background: var(--blue-100); color: var(--blue-800); }
+.bubble { max-width: 68%; padding: 14px 18px; font-size: 14px; line-height: 1.7; border-radius: 18px; }
+.bubble.ai { background: var(--bubble-ai-bg); border: 1px solid var(--border); border-top-left-radius: 4px; color: var(--bubble-ai-color); transition: background 0.3s; }
+.bubble.user { background: var(--teal-600); color: #fff; border-top-right-radius: 4px; }
+.bubble.error { background: var(--coral-50); border-color: #F0997B; color: var(--coral-400); }
+[data-theme="dark"] .bubble.error { background: #2a100a; }
+.bubble.ai p { margin-bottom: 8px; }
+.bubble.ai p:last-of-type { margin-bottom: 0; }
+.bubble.ai ul, .bubble.ai ol { padding-left: 18px; margin: 6px 0; }
+.bubble.ai li { margin-bottom: 4px; }
+.bubble.ai strong { font-weight: 600; }
+
+.stream-cursor { display: inline-block; width: 2px; height: 14px; background: var(--teal-400); margin-left: 2px; vertical-align: middle; border-radius: 1px; animation: blink 0.9s step-end infinite; }
+@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0;} }
+
+.sources-row { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+.src-tag { font-size: 10.5px; padding: 3px 9px; border-radius: 10px; font-weight: 600; letter-spacing: 0.3px; }
+.src-oms    { background: var(--teal-50);  color: var(--teal-600); }
+.src-has    { background: var(--blue-50);  color: var(--blue-600); }
+.src-vidal  { background: var(--pink-50);  color: var(--pink-400); }
+.src-pubmed { background: var(--amber-50); color: var(--amber-400); }
+.src-other  { background: var(--surface-2); color: var(--text-muted); }
+
+.msg-meta { font-size: 10px; color: var(--text-faint); margin-top: 4px; text-align: right; }
+.msg-row.user .msg-meta { text-align: right; padding-right: 48px; }
+.msg-row.ai  .msg-meta  { text-align: left;  padding-left: 48px; }
+
+.typing-row { display: flex; gap: 12px; animation: fadeUp 0.2s ease-out; }
+.typing-bubble { background: var(--bubble-ai-bg); border: 1px solid var(--border); border-top-left-radius: 4px; border-radius: 18px; padding: 16px 20px; display: flex; gap: 5px; align-items: center; }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: var(--teal-200); animation: bounce 1.3s ease-in-out infinite; }
+.dot:nth-child(2) { animation-delay: 0.2s; }
+.dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes bounce { 0%,60%,100%{transform:translateY(0);} 30%{transform:translateY(-6px);} }
+
+/* Input zone */
+.input-zone { padding: 14px 28px 20px; background: var(--surface); border-top: 1px solid var(--border); flex-shrink: 0; transition: background 0.3s; }
+.input-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.stream-toggle { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); cursor: pointer; user-select: none; }
+.stream-toggle input[type="checkbox"] { accent-color: var(--teal-400); cursor: pointer; width: 13px; height: 13px; }
+.disclaimer { font-size: 11px; color: var(--text-faint); text-align: center; margin-bottom: 10px; }
+.input-box { display: flex; align-items: flex-end; gap: 10px; background: var(--bg); border: 1.5px solid rgba(0,0,0,0.09); border-radius: 16px; padding: 11px 11px 11px 18px; transition: border-color 0.15s, background 0.3s; }
+[data-theme="dark"] .input-box { border-color: rgba(255,255,255,0.09); }
+.input-box:focus-within { border-color: var(--teal-200); background: var(--surface); }
+#userInput { flex: 1; background: transparent; border: none; outline: none; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text-primary); resize: none; max-height: 130px; min-height: 22px; line-height: 1.55; }
+#userInput::placeholder { color: var(--text-faint); }
+.send-btn { width: 40px; height: 40px; border-radius: 11px; background: var(--teal-600); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.15s, transform 0.1s; color: #fff; font-size: 17px; }
+.send-btn:hover:not(:disabled)  { background: var(--teal-800); }
+.send-btn:active:not(:disabled) { transform: scale(0.94); }
+.send-btn:disabled { background: var(--surface-2); color: var(--text-faint); cursor: not-allowed; }
+
+/* ══════════════════════════════════════════════════════════
+   NOUVEAU : PANNEAU HISTORIQUE TEMPS RÉEL (DROITE)
+══════════════════════════════════════════════════════════ */
+.history-drawer {
+  width: 320px; min-width: 320px;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s, min-width 0.3s;
+  overflow: hidden;
+}
+.history-drawer.closed {
+  width: 0; min-width: 0; transform: translateX(100%);
+  border-left: none;
+}
+.hd-header {
+  padding: 18px 20px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.hd-title { font-size: 14px; font-weight: 600; color: var(--text-primary); display: flex; align-items: center; gap: 8px; }
+.hd-badge { background: var(--teal-50); color: var(--teal-600); font-size: 11px; padding: 2px 7px; border-radius: 10px; font-weight: bold; }
+[data-theme="dark"] .hd-badge { background: #0a1f18; color: var(--teal-200); }
+.hd-body { flex: 1; overflow-y: auto; padding: 16px; background: var(--bg); font-family: monospace; font-size: 11.5px; }
+
+/* Style du JSON */
+.json-container { line-height: 1.5; white-space: pre-wrap; word-break: break-all; color: var(--text-primary); }
+.json-key { color: var(--coral-400); font-weight: bold; }
+.json-string { color: var(--teal-600); }
+[data-theme="dark"] .json-string { color: var(--teal-200); }
+.json-user { background: rgba(24, 95, 165, 0.08); border-left: 3px solid var(--blue-600); padding: 6px 8px; margin-bottom: 10px; border-radius: 0 6px 6px 0; }
+.json-assistant { background: rgba(15, 110, 86, 0.08); border-left: 3px solid var(--teal-600); padding: 6px 8px; margin-bottom: 10px; border-radius: 0 6px 6px 0; }
+.json-empty { color: var(--text-faint); text-align: center; margin-top: 40px; font-style: italic; font-family: 'DM Sans', sans-serif; }
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--text-faint); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- ══ SIDEBAR (GAUCHE) ════════════════════════════════ -->
+<div class="sidebar">
+  <div class="sb-header">
+    <div class="logo-row">
+      <div class="logo-mark">🏥</div>
+      <span class="logo-name">MediLearn</span>
+    </div>
+    <div class="logo-tag">Assistant Médical Éducatif</div>
+  </div>
+
+  <div class="sb-section">Sources fiables</div>
+  <div class="source-item">
+    <div class="src-dot" style="background:#1D9E75"></div>
+    <span class="src-label">OMS</span><span class="src-desc">Mondiale</span>
+  </div>
+  <div class="source-item">
+    <div class="src-dot" style="background:#378ADD"></div>
+    <span class="src-label">HAS</span><span class="src-desc">France</span>
+  </div>
+  <div class="source-item">
+    <div class="src-dot" style="background:#D4537E"></div>
+    <span class="src-label">Vidal</span><span class="src-desc">Médicaments</span>
+  </div>
+  <div class="source-item">
+    <div class="src-dot" style="background:#BA7517"></div>
+    <span class="src-label">PubMed</span><span class="src-desc">Recherche</span>
+  </div>
+
+  <div class="sb-section" style="margin-top:12px">Technologie RAG</div>
+  <div class="sb-tech">
+    <div class="tech-pill"><div class="tech-dot"></div> FAISS Vector Store</div>
+    <div class="tech-pill"><div class="tech-dot"></div> Sentence Embeddings</div>
+    <div class="tech-pill"><div class="tech-dot"></div> Agent LangChain</div>
+    <div class="tech-pill"><div class="tech-dot"></div> PDFs médicaux indexés</div>
+  </div>
+
+  <div class="sb-section" style="margin-top:12px">📎 Ajouter un PDF</div>
+  <div class="sb-upload">
+    <div class="upload-zone" id="uploadZone" onclick="document.getElementById('pdfInput').click()"
+         ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+      <input type="file" id="pdfInput" accept=".pdf" onchange="uploadFile(this.files[0])">
+      <div class="upload-icon">📄</div>
+      <div class="upload-label"><strong>Cliquez ou glissez</strong><br>un fichier PDF</div>
+    </div>
+    <div class="upload-status" id="uploadStatus"></div>
+  </div>
+
+  <div class="sb-footer">
+    <div class="edu-badge">
+      <div class="pulse-dot"></div>
+      Mode éducatif actif — pas de diagnostic médical
+    </div>
+  </div>
+</div>
+
+<!-- ══ MAIN ZONE ════════════════════════════════════════ -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <span class="topbar-title">Assistant Médical</span>
+      <span class="status-badge loading" id="statusBadge">
+        <span class="status-dot-anim"></span>
+        Initialisation…
+      </span>
+    </div>
+    <div class="topbar-right">
+      <span class="rag-tag">RAG · Sources vérifiées</span>
+      <button class="clear-btn" onclick="clearHistory()" title="Effacer l'historique">🗑 Effacer</button>
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Mode sombre / clair">🌙</button>
+      <!-- NOUVEAU : Bouton pour ouvrir/fermer le moniteur d'historique -->
+      <button class="history-toggle" id="historyToggle" onclick="toggleHistoryDrawer()" title="Voir chatHistory en direct">📊</button>
+    </div>
+  </div>
+
+  <div class="chat-area" id="chatArea">
+    <div class="welcome" id="welcome">
+      <div class="welcome-icon-wrap">⚕️</div>
+      <h1>Bonjour, je suis MediLearn</h1>
+      <p class="welcome-sub">
+        Je réponds à vos questions médicales en m'appuyant uniquement sur
+        des sources fiables (OMS, HAS, Vidal, PubMed).<br>
+        Mon objectif est <strong>éducatif</strong> — je n'émets aucun diagnostic.
+      </p>
+      <div class="sugg-grid">
+        <button class="sugg-btn" onclick="useSuggestion('Quels sont les facteurs de risque du diabète de type 2 ?')">
+          <span class="sugg-cat">🩸 Diabète</span>
+          <span class="sugg-text">Facteurs de risque du diabète de type 2</span>
+        </button>
+        <button class="sugg-btn" onclick="useSuggestion('Comment fonctionne le système immunitaire ?')">
+          <span class="sugg-cat">🦠 Immunologie</span>
+          <span class="sugg-text">Fonctionnement du système immunitaire</span>
+        </button>
+        <button class="sugg-btn" onclick="useSuggestion('Quelles sont les maladies cardiovasculaires les plus fréquentes ?')">
+          <span class="sugg-cat">❤️ Cardiologie</span>
+          <span class="sugg-text">Maladies cardiovasculaires fréquentes</span>
+        </button>
+        <button class="sugg-btn" onclick="useSuggestion('Expliquez le mécanisme de l\'hypertension artérielle')">
+          <span class="sugg-cat">📊 Physiologie</span>
+          <span class="sugg-text">Mécanisme de l\'hypertension artérielle</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="input-zone">
+    <div class="input-row">
+      <label class="stream-toggle">
+        <input type="checkbox" id="streamToggle" checked>
+        ⚡ Réponse en direct (streaming)
+      </label>
+    </div>
+    <div class="disclaimer">
+      ⚠️ Informations à titre éducatif uniquement — consultez toujours un professionnel de santé
+    </div>
+    <div class="input-box">
+      <textarea id="userInput" placeholder="Posez votre question médicale…" rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+      <button class="send-btn" id="sendBtn" onclick="sendMessage()" disabled title="Envoyer">&#10148;</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ NOUVEAU : PANNEAU HISTORIQUE (DROITE) ═════════════ -->
+<div class="history-drawer" id="historyDrawer">
+  <div class="hd-header">
+    <div class="hd-title">📜 Structure <span class="json-key">chatHistory</span></div>
+    <div class="hd-badge" id="historyCount">0 msg</div>
+  </div>
+  <div class="hd-body" id="historyJSONBody">
+    <div class="json-empty">Aucun log en mémoire. Envoyez un message pour démarrer le tracking...</div>
+  </div>
+</div>
+
+<!-- ══ SCRIPT CONFIGURÉ POUR HISTORIQUE TEMPS RÉEL ══════ -->
+<script>
+/* ── State ─────────────────────────────────────────── */
+let isLoading   = false;
+let chatHistory = [];   // [{role:'user'|'assistant', content:'…'}]
+let isDark      = false;
+let isHistoryOpen = true; // Ouvert par défaut pour le dev
+
+/* ── Theme ──────────────────────────────────────────── */
+function toggleTheme() {
+  isDark = !isDark;
+  document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  document.getElementById('themeToggle').textContent = isDark ? '☀️' : '🌙';
+}
+
+/* ── NOUVEAU : Gestion de l'affichage du Panel de Droite ── */
+function toggleHistoryDrawer() {
+  isHistoryOpen = !isHistoryOpen;
+  const drawer = document.getElementById('historyDrawer');
+  if (isHistoryOpen) {
+    drawer.classList.remove('closed');
+  } else {
+    drawer.classList.add('closed');
+  }
+}
+
+/* ── NOUVEAU : Rendu propre et synchronisé de chatHistory ── */
+function updateHistoryMonitor() {
+  const container = document.getElementById('historyJSONBody');
+  const countBadge = document.getElementById('historyCount');
+  
+  countBadge.textContent = `${chatHistory.length} objet${chatHistory.length > 1 ? 's' : ''}`;
+  
+  if (chatHistory.length === 0) {
+    container.innerHTML = `<div class="json-empty">Aucun log en mémoire. Envoyez un message pour démarrer le tracking...</div>`;
+    return;
+  }
+  
+  let html = '<div class="json-container">';
+  chatHistory.forEach((msg, idx) => {
+    const boxClass = msg.role === 'user' ? 'json-user' : 'json-assistant';
+    html += `<div class="${boxClass}">`;
+    html += `<strong>[${idx}] Object</strong> {<br>`;
+    html += `  <span class="json-key">"role"</span>: <span class="json-string">"${msg.role}"</span>,<br>`;
+    // Échappement propre pour l'affichage de la string sans casser la structure HTML
+    const cleanContent = escHtml(msg.content).replace(/\n/g, '<br>&nbsp;&nbsp;');
+    html += `  <span class="json-key">"content"</span>: <span class="json-string">"${cleanContent}"</span><br>`;
+    html += `}`;
+    html += `</div>`;
+  });
+  html += '</div>';
+  
+  container.innerHTML = html;
+  // Scroll automatique vers le bas de l'historique technique
+  container.scrollTop = container.scrollHeight;
+}
+
+/* ── Sources ────────────────────────────────────────── */
+const SOURCE_MAP = {
+  'oms':    ['src-oms',    '● OMS'],
+  'has':    ['src-has',    '● HAS'],
+  'vidal':  ['src-vidal',  '● Vidal'],
+  'pubmed': ['src-pubmed', '● PubMed'],
+};
+
+function makeSrcTag(src) {
+  const key = (src || '').toLowerCase();
+  for (const [k, [cls, label]] of Object.entries(SOURCE_MAP)) {
+    if (key.includes(k)) return `<span class="src-tag ${cls}">${label}</span>`;
+  }
+  return `<span class="src-tag src-other">● ${src}</span>`;
+}
+
+function detectSources(text) {
+  const found = new Set(), lc = text.toLowerCase();
+  if (lc.includes('oms')    || lc.includes('[source: oms]'))    found.add('OMS');
+  if (lc.includes('has')    || lc.includes('[source: has]'))    found.add('HAS');
+  if (lc.includes('vidal')  || lc.includes('[source: vidal]'))  found.add('Vidal');
+  if (lc.includes('pubmed') || lc.includes('[source: pubmed]')) found.add('PubMed');
+  return [...found];
+}
+
+/* ── Format markdown-ish ────────────────────────────── */
+function formatResponse(text) {
+  let t = text.replace(/\[Source:\s*\w+\]/gi, '');
+  t = t.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  const lines = t.split('\n');
+  let html = '', inList = false;
+  for (let line of lines) {
+    line = line.trim();
+    if (!line) { if (inList) { html += '</ul>'; inList = false; } continue; }
+    if (/^[-•*]\s/.test(line)) {
+      if (!inList) { html += '<ul>'; inList = true; }
+      html += `<li>${line.replace(/^[-•*]\s/, '')}</li>`;
+    } else {
+      if (inList) { html += '</ul>'; inList = false; }
+      html += `<p>${line}</p>`;
+    }
+  }
+  if (inList) html += '</ul>';
+  return html || `<p>${escHtml(text)}</p>`;
+}
+
+/* ── Time ───────────────────────────────────────────── */
+function nowTime() {
+  return new Date().toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
+}
+
+/* ── DOM helpers ────────────────────────────────────── */
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function hideWelcome() {
+  const w = document.getElementById('welcome');
+  if (w) w.remove();
+}
+
+function scrollBottom() {
+  const area = document.getElementById('chatArea');
+  area.scrollTop = area.scrollHeight;
+}
+
+function appendUserMsg(text) {
+  hideWelcome();
+  const area = document.getElementById('chatArea');
+  const row = document.createElement('div');
+  row.className = 'msg-row user';
+  row.innerHTML = `
+    <div class="avatar user">Vous</div>
+    <div class="bubble user">${escHtml(text)}</div>
+  `;
+  area.appendChild(row);
+  const meta = document.createElement('div');
+  meta.className = 'msg-meta';
+  meta.textContent = nowTime();
+  area.appendChild(meta);
+  scrollBottom();
+}
+
+function showTyping() {
+  const area = document.getElementById('chatArea');
+  const row = document.createElement('div');
+  row.className = 'typing-row'; row.id = 'typingRow';
+  row.innerHTML = `
+    <div class="avatar ai">ML</div>
+    <div class="typing-bubble">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    </div>`;
+  area.appendChild(row);
+  scrollBottom();
+}
+
+function removeTyping() {
+  const el = document.getElementById('typingRow');
+  if (el) el.remove();
+}
+
+function appendAIMsg(text, sources, isError) {
+  const area = document.getElementById('chatArea');
+  const row = document.createElement('div');
+  row.className = 'msg-row ai';
+  const detectedSrcs = sources && sources.length ? sources : detectSources(text);
+  const srcsHtml = detectedSrcs.length
+    ? `<div class="sources-row">${detectedSrcs.map(makeSrcTag).join('')}</div>`
+    : '';
+  row.innerHTML = `
+    <div class="avatar ai">ML</div>
+    <div class="bubble ${isError ? 'error' : 'ai'}">
+      ${isError ? `<p>${escHtml(text)}</p>` : formatResponse(text)}
+      ${srcsHtml}
+    </div>`;
+  area.appendChild(row);
+  const meta = document.createElement('div');
+  meta.className = 'msg-meta';
+  meta.textContent = nowTime();
+  area.appendChild(meta);
+  scrollBottom();
+}
+
+/* ── Streaming ──────────────────────────────────────── */
+async function sendStreaming(question) {
+  hideWelcome();
+  const area = document.getElementById('chatArea');
+
+  const row = document.createElement('div');
+  row.className = 'msg-row ai';
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble ai';
+  bubble.innerHTML = '<span class="stream-cursor"></span>';
+  row.appendChild(document.createElement('div')).className = 'avatar ai';
+  row.querySelector('.avatar').textContent = 'ML';
+  row.appendChild(bubble);
+  area.appendChild(row);
+  scrollBottom();
+
+  let fullText = '';
+
+  try {
+    const res = await fetch('/api/chat/stream', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question, history: chatHistory })
+    });
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const lines = decoder.decode(value).split('\n');
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        try {
+          const d = JSON.parse(line.slice(6));
+          if (d.error) {
+            bubble.innerHTML = `<p>⚠️ ${escHtml(d.error)}</p>`;
+            return;
+          }
+          if (d.chunk) {
+            fullText += d.chunk;
+            bubble.innerHTML = formatResponse(fullText) + '<span class="stream-cursor"></span>';
+            scrollBottom();
+          }
+          if (d.done) {
+            bubble.innerHTML = formatResponse(fullText);
+            const srcs = detectSources(fullText);
+            if (srcs.length) {
+              const sr = document.createElement('div');
+              sr.className = 'sources-row';
+              sr.innerHTML = srcs.map(makeSrcTag).join('');
+              bubble.appendChild(sr);
+            }
+          }
+        } catch {}
+      }
+    }
+  } catch (err) {
+    bubble.innerHTML = `<p>⚠️ Erreur streaming : ${escHtml(err.message)}</p>`;
+  }
+
+  const meta = document.createElement('div');
+  meta.className = 'msg-meta';
+  meta.textContent = nowTime();
+  area.appendChild(meta);
+  scrollBottom();
+
+  return fullText;
+}
+
+/* ── Clear history ──────────────────────────────────── */
+function clearHistory() {
+  chatHistory = [];
+  updateHistoryMonitor(); // Synchronisation
+  const area = document.getElementById('chatArea');
+  area.innerHTML = '';
+  const welcome = document.createElement('div');
+  welcome.className = 'welcome'; welcome.id = 'welcome';
+  welcome.innerHTML = `
+    <div class="welcome-icon-wrap">⚕️</div>
+    <h1>Bonjour, je suis MediLearn</h1>
+    <p class="welcome-sub">
+      Je réponds à vos questions médicales en m'appuyant uniquement sur
+      des sources fiables (OMS, HAS, Vidal, PubMed).<br>
+      Mon objectif est <strong>éducatif</strong> — je n'émets aucun diagnostic.
+    </p>
+    <div class="sugg-grid">
+      <button class="sugg-btn" onclick="useSuggestion('Quels sont les facteurs de risque du diabète de type 2 ?')">
+        <span class="sugg-cat">🩸 Diabète</span>
+        <span class="sugg-text">Facteurs de risque du diabète de type 2</span>
+      </button>
+      <button class="sugg-btn" onclick="useSuggestion('Comment fonctionne le système immunitaire ?')">
+        <span class="sugg-cat">🦠 Immunologie</span>
+        <span class="sugg-text">Fonctionnement du système immunitaire</span>
+      </button>
+      <button class="sugg-btn" onclick="useSuggestion('Quelles sont les maladies cardiovasculaires les plus fréquentes ?')">
+        <span class="sugg-cat">❤️ Cardiologie</span>
+        <span class="sugg-text">Maladies cardiovasculaires fréquentes</span>
+      </button>
+      <button class="sugg-btn" onclick="useSuggestion('Expliquez le mécanisme de l\'hypertension artérielle')">
+        <span class="sugg-cat">📊 Physiologie</span>
+        <span class="sugg-text">Mécanisme de l\'hypertension artérielle</span>
+      </button>
+    </div>`;
+  area.appendChild(welcome);
+}
+
+/* ── Input helpers ──────────────────────────────────── */
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 130) + 'px';
+  document.getElementById('sendBtn').disabled = !el.value.trim() || isLoading;
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+}
+
+function useSuggestion(text) {
+  const inp = document.getElementById('userInput');
+  inp.value = text;
+  autoResize(inp);
+  sendMessage();
+}
+
+/* ── Send message ───────────────────────────────────── */
+async function sendMessage() {
+  if (isLoading) return;
+  const input   = document.getElementById('userInput');
+  const text    = input.value.trim();
+  if (!text) return;
+
+  isLoading = true;
+  document.getElementById('sendBtn').disabled = true;
+  input.value = ''; input.style.height = 'auto';
+
+  appendUserMsg(text);
+  
+  // 1. Push user msg + Update en temps réel
+  chatHistory.push({ role: 'user', content: text });
+  updateHistoryMonitor();
+
+  const useStream = document.getElementById('streamToggle').checked;
+
+  if (useStream) {
+    const reply = await sendStreaming(text);
+    if (reply) {
+      // 2. Push assistant streaming msg + Update
+      chatHistory.push({ role: 'assistant', content: reply });
+      updateHistoryMonitor();
+    }
+  } else {
+    showTyping();
+    try {
+      const res  = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: text, history: chatHistory })
+      });
+      const data = await res.json();
+      removeTyping();
+      if (data.error) {
+        appendAIMsg('⚠️ ' + data.error + (data.detail ? '\n\nDétail : ' + data.detail : ''), [], true);
+      } else {
+        appendAIMsg(data.response, data.sources || []);
+        
+        // 3. Push assistant classique msg + Update
+        chatHistory.push({ role: 'assistant', content: data.response });
+        updateHistoryMonitor();
+      }
+    } catch (err) {
+      removeTyping();
+      appendAIMsg('⚠️ Impossible de contacter le serveur. Vérifiez que flask_app.py est démarré.', [], true);
+    }
+  }
+
+  isLoading = false;
+  input.focus();
+}
+
+/* ── Upload PDF ─────────────────────────────────────── */
+function handleDragOver(e) { e.preventDefault(); document.getElementById('uploadZone').classList.add('drag-over'); }
+function handleDragLeave(e) { document.getElementById('uploadZone').classList.remove('drag-over'); }
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('uploadZone').classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file) uploadFile(file);
+}
+
+function setUploadStatus(text, color = '') {
+  const statusEl = document.getElementById('uploadStatus');
+  statusEl.textContent = text;
+  statusEl.style.color = color || 'var(--teal-200)';
+}
+
+async function uploadFile(file) {
+  if (!file || !file.name.toLowerCase().endsWith('.pdf')) {
+    setUploadStatus('❌ Fichier PDF uniquement', '#F0997B');
+    return;
+  }
+  setUploadStatus('⏳ Indexation en cours…');
+  const fd = new FormData();
+  fd.append('file', file);
+
+  try {
+    const res = await fetch('/api/upload', { method: 'POST', body: fd });
+    const data = await res.json();
+    if (data.success) {
+      setUploadStatus('✅ Indexé avec succès !');
+      checkServerStatus(); 
+      setTimeout(() => setUploadStatus(''), 4000);
+    } else {
+      setUploadStatus('❌ ' + (data.error || 'Erreur'), '#F0997B');
+    }
+  } catch (err) {
+    setUploadStatus('❌ Erreur connexion', '#F0997B');
+  }
+}
+
+/* ── Synchronisation Statut Serveur ─────────────────── */
+async function checkServerStatus() {
+  const badge = document.getElementById('statusBadge');
+  try {
+    const res = await fetch('/api/status');
+    const data = await res.json();
+    if (data.ready) {
+      badge.className = 'status-badge ready';
+      badge.innerHTML = `<span class="status-dot-anim"></span> Prêt (${data.chunks} chunks)`;
+    } else {
+      badge.className = 'status-badge loading';
+      badge.innerHTML = `<span class="status-dot-anim"></span> Initialisation…`;
+    }
+  } catch (err) {
+    badge.className = 'status-badge error';
+    badge.innerHTML = `<span class="status-dot-anim"></span> Serveur déconnecté`;
+  }
+}
+
+checkServerStatus();
+setInterval(checkServerStatus, 5000);
+</script>
+</body>
+</html>
